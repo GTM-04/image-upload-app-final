@@ -10,16 +10,16 @@
   <form (ngSubmit)="onUpload()" enctype="multipart/form-data">
     <ion-item>
       <ion-label position="stacked">Select Image</ion-label>
-      <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+      <input type="file" name="uploadfile" (change)="onFileSelected($event)" accept="image/jpeg, image/png, image/gif" />
     </ion-item>
-    <ion-button expand="block" type="submit">UPLOAD</ion-button>
+    <ion-button expand="block" type="submit" name="upload">UPLOAD</ion-button>
   </form>
   <ion-alert *ngIf="msg" message="{{ msg }}"></ion-alert>
   <!-- Filter images by type -->
   <form>
     <ion-item>
       <ion-label position="stacked">Filter by File Type:</ion-label>
-      <ion-select (change)="onFileTypeSelected($event)">
+      <ion-select [(ngModel)]="fileType" (ionChange)="fetchImages()">
         <ion-select-option value="">All</ion-select-option>
         <ion-select-option value="jpg">JPG</ion-select-option>
         <ion-select-option value="jpeg">JPEG</ion-select-option>
@@ -33,8 +33,8 @@
   <ion-grid>
     <ion-row>
       <ion-col size="6" *ngFor="let image of images">
-        <a [href]="'http://localhost/image/' + image.filename" target="_blank">
-          <img src="'http://localhost/image/' + image.filename" width="150" height="150" />
+        <a [href]="image.fullSizeUrl" target="_blank">
+          <img [src]="image.thumbnailUrl" [alt]="image.filename">
         </a>
       </ion-col>
     </ion-row>

@@ -1,61 +1,48 @@
-import { Component, OnInit } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
-interface Image {
-  filename: string;
-  file_type: string;
-}
 @Component({
-  selector: 'app-home2',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  selector: 'app-home',
+  templateUrl: 'home.component.html',
+  styleUrls: ['home.component.scss'],
 })
-export class HomeComponent implements OnInit {
-  selectedFile!: File;
+export class HomeComponent {
+  fileToUpload: File | null = null;
   msg: string | null = null;
-  images: Image[] = [];
-  fileType: string = '';
+  images: any[] = [];
+  fileType: string | null = null;
+  largeImageUrl: string | null = null;
+  largeImageAlt: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private modalController: ModalController) {}
 
-  onFileSelected(event: any): void {
-    this.selectedFile = event.target.files[0];
+  onFileSelected(event: any) {
+    this.fileToUpload = event.target.files[0] as File;
   }
 
-  onUpload(): void {
-    if (!this.selectedFile) {
-      this.msg = 'No file selected.';
-      return;
+  onUpload() {
+    if (this.fileToUpload) {
+      const formData = new FormData();
+      formData.append('uploadfile', this.fileToUpload, this.fileToUpload.name);
+
+      this.http.post<any>('http://localhost/upload.php', formData).subscribe(
+        (response) => {
+          this.msg = response.msg;
+          this.fetchImages();
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     }
-    const formData = new FormData();
-    formData.append('uploadfile', this.selectedFile);
-
-    this.http.post<any>('http://localhost/upload.php', formData).subscribe(
-      (response) => {
-        console.log(response);
-        this.msg = response.msg;
-        this.fetchImages();
-      },
-      (error) => {
-        console.error(error);
-        this.msg = 'Failed to upload image!';
-      }
-    );
   }
 
-  ngOnInit() {
-    this.fetchImages();
-  }
-
-  fetchImages(): void {
-    const url = this.fileType
-      ? `http://localhost/upload.php?filetype=${this.fileType}`
-      : 'http://localhost/upload.php';
-
-    this.http.get<Image[]>(url).subscribe(
+  fetchImages() {
+    const url = 'http://localhost/fetch-images.php?filetype=' + this.fileType;
+    this.http.get<any>(url).subscribe(
       (response) => {
-        console.log(response);
-        this.images = response;
+        this.images = response.images;
       },
       (error) => {
         console.error(error);
@@ -63,8 +50,18 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  onFileTypeSelected(event: any): void {
-    this.fileType = event.target.value;
-    this.fetchImages();
+  showLargeImage(imageUrl: string) {
+    this.largeImageUrl = imageUrl;
+    this.largeImageAlt = 'Large Image';
+  }
+
+  dismissLargeImage() {
+    this.largeImageUrl = null;
+    this.largeImageAlt = null;
+  }
+
+  savePictureType() {
+    
+    console.log('Selected picture type:', this.fileType);
   }
 }
