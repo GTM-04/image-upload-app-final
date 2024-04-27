@@ -13,3 +13,6 @@ Debug the application by ionic serve
 Move the index.php and style.css to C:\xampp\htdocs 
 Import the database named uploadjnrdev.sql to your XAMPP server
 To run the project copy and paste the link to your browser **localhost/index.php**
+
+
+To see the demo check for the file with name picture upload demo.mp4 or click the link https://youtu.be/h0Ny7BeW27U
