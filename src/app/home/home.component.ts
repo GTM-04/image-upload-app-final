@@ -1,17 +1,16 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import {HttpClient} from "@angular/common/http";
 
 interface Image {
   filename: string;
   file_type: string;
 }
-
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-home2',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
 })
-export class HomePage {
+export class HomeComponent implements OnInit {
   selectedFile!: File;
   msg: string | null = null;
   images: Image[] = [];
